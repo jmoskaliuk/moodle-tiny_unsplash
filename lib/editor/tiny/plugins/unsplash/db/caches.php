@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Cache definitions for the tiny_unsplash plugin.
  *
  * @package     tiny_unsplash
  * @copyright   2026 eLeDia GmbH <support@eledia.de>
@@ -24,8 +24,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tiny_unsplash';
-$plugin->release   = '1.1.0';
-$plugin->version   = 2026042300;
-$plugin->requires  = 2024100100;
-$plugin->maturity  = MATURITY_ALPHA;
+$definitions = [
+    // API search responses. Pixabay terms require a minimum 24h cache; we honour
+    // that by storing a per-entry expiry timestamp inside the cached payload
+    // (see \tiny_unsplash\api\base_client::get).
+    'apiresults' => [
+        'mode'                   => cache_store::MODE_APPLICATION,
+        'simplekeys'             => true,
+        'simpledata'             => false,
+        'staticacceleration'     => true,
+        'staticaccelerationsize' => 64,
+    ],
+];

@@ -31,13 +31,13 @@ use editor_tiny\plugin_with_configuration;
 
 /**
  * Tiny Unsplash plugin info — registers buttons and passes config to the JS side.
+ *
+ * Note on security: only the (legacy) Unsplash key is forwarded to JS. Pexels
+ * and Pixabay keys NEVER leave the server; the JS calls a Moodle web service
+ * proxy, which performs the outbound HTTP request.
  */
 class plugininfo extends plugin implements plugin_with_buttons, plugin_with_configuration {
-    /**
-     * Get the list of available buttons provided by this plugin.
-     *
-     * @return array
-     */
+
     public static function get_available_buttons(): array {
         return [
             'tiny_unsplash/unsplash_btn',
@@ -47,14 +47,11 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
     /**
      * Get plugin configuration for the given context.
      *
-     * This is where we pass PHP-side settings (API key, app name, per-page)
-     * down to the AMD modules in the browser.
-     *
-     * @param context $context The context
-     * @param array $options Editor options
-     * @param array $fpoptions File picker options
-     * @param \editor_tiny\editor|null $editor The editor instance
-     * @return array Configuration array passed to JS options
+     * @param context $context
+     * @param array $options
+     * @param array $fpoptions
+     * @param \editor_tiny\editor|null $editor
+     * @return array
      */
     public static function get_plugin_configuration_for_context(
         \context $context,
@@ -62,20 +59,25 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
         array $fpoptions,
         ?\editor_tiny\editor $editor = null
     ): array {
-        // Capability check — return empty config to disable the plugin for this user.
         if (!has_capability('tiny/unsplash:use', $context)) {
             return [];
         }
 
-        $apikey  = get_config('tiny_unsplash', 'apikey');
-        $appname = get_config('tiny_unsplash', 'appname');
-        $perpage = (int) get_config('tiny_unsplash', 'perpage');
+        $unsplashkey = (string) get_config('tiny_unsplash', 'apikey');
+        $appname     = (string) get_config('tiny_unsplash', 'appname');
+        $perpage     = (int) get_config('tiny_unsplash', 'perpage');
+        $showattr    = (int) get_config('tiny_unsplash', 'showattribution');
 
-        if (empty($apikey)) {
+        // Boolean availability flags only — keys stay server-side for Pexels / Pixabay.
+        $hasspexels  = (string) get_config('tiny_unsplash', 'pexels_apikey') !== '';
+        $haspixabay  = (string) get_config('tiny_unsplash', 'pixabay_apikey') !== '';
+
+        // No provider configured at all? Disable the button.
+        if ($unsplashkey === '' && !$hasspexels && !$haspixabay) {
             return [];
         }
 
-        if (empty($appname)) {
+        if ($appname === '') {
             $appname = 'moodle_unsplash';
         }
         if ($perpage < 1 || $perpage > 30) {
@@ -83,9 +85,16 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
         }
 
         return [
-            'apikey'  => $apikey,
-            'appname' => $appname,
-            'perpage' => $perpage,
+            'apikey'          => $unsplashkey,
+            'appname'         => $appname,
+            'perpage'         => $perpage,
+            'contextid'       => $context->id,
+            'showattribution' => $showattr ? true : false,
+            'providers'       => [
+                'unsplash' => $unsplashkey !== '',
+                'pexels'   => $hasspexels,
+                'pixabay'  => $haspixabay,
+            ],
         ];
     }
 }

@@ -25,21 +25,61 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Unsplash Images';
-$string['pluginname_desc'] = 'Search and insert free, high-quality images from Unsplash directly into the TinyMCE editor.';
-$string['privacy:metadata'] = 'The Unsplash Images plugin does not store any personal data. Search queries are sent to the Unsplash API.';
-$string['unsplash:use'] = 'Use Unsplash image picker';
-$string['button_unsplash'] = 'Unsplash Images';
-$string['menuitem_unsplash'] = 'Insert Unsplash image';
-$string['settings'] = 'Unsplash plugin settings';
-$string['settings_desc'] = 'Configure the Unsplash image picker plugin for TinyMCE.';
+$string['pluginname'] = 'Stock images (Unsplash, Pexels, Pixabay)';
+$string['pluginname_desc'] = 'Search and insert free, high-quality images from Unsplash, Pexels or Pixabay directly into the TinyMCE editor.';
+
+// Privacy.
+$string['privacy:metadata'] = 'The Stock Images plugin does not store personal data. Search queries are sent to the configured providers.';
+$string['privacy:metadata:searchquery'] = 'The search term entered by the user.';
+$string['privacy:metadata:unsplash'] = 'Search queries are forwarded to the Unsplash API to retrieve image results.';
+$string['privacy:metadata:pexels'] = 'Search queries are forwarded to the Pexels API to retrieve image results.';
+$string['privacy:metadata:pixabay'] = 'Search queries are forwarded to the Pixabay API to retrieve image results.';
+
+// Capability.
+$string['unsplash:use'] = 'Use the stock image picker';
+
+// Buttons / menu.
+$string['button_unsplash'] = 'Stock images';
+$string['menuitem_unsplash'] = 'Insert stock image';
+
+// Settings — common.
+$string['settings'] = 'Stock images plugin settings';
+$string['settings_desc'] = 'Configure the stock image picker plugin for TinyMCE.';
+$string['settings_unsplash'] = 'Unsplash';
+$string['settings_pexels'] = 'Pexels';
+$string['settings_pexels_desc'] = 'Pexels lets you hotlink images. Attribution is recommended.';
+$string['settings_pixabay'] = 'Pixabay';
+$string['settings_pixabay_desc'] = 'Pixabay does NOT allow hotlinking. Images are downloaded into the user\'s draft area via the Moodle File API. A minimum cache of 24 hours is enforced.';
+$string['settings_common'] = 'Common';
+
+// Settings — Unsplash.
 $string['apikey'] = 'Unsplash Access Key';
-$string['apikey_desc'] = 'Enter your Unsplash API Access Key. You can get one for free at <a href="https://unsplash.com/developers" target="_blank">unsplash.com/developers</a>.';
+$string['apikey_desc'] = 'Your Unsplash API Access Key. Get one for free at <a href="https://unsplash.com/developers" target="_blank">unsplash.com/developers</a>.';
 $string['appname'] = 'Application name';
 $string['appname_desc'] = 'The name of your application as registered on Unsplash. Used for UTM attribution links.';
+
+// Settings — Pexels.
+$string['pexels_apikey'] = 'Pexels API Key';
+$string['pexels_apikey_desc'] = 'Your Pexels API key. Get one at <a href="https://www.pexels.com/api/" target="_blank">pexels.com/api</a>.';
+
+// Settings — Pixabay.
+$string['pixabay_apikey'] = 'Pixabay API Key';
+$string['pixabay_apikey_desc'] = 'Your Pixabay API key. Get one at <a href="https://pixabay.com/api/docs/" target="_blank">pixabay.com/api/docs</a>.';
+
+// Settings — Common (shared).
 $string['perpage'] = 'Results per page';
 $string['perpage_desc'] = 'Number of images to show per search page (max 30).';
-$string['dialog_title'] = 'Insert image from Unsplash';
+$string['cachettl'] = 'API cache TTL';
+$string['cachettl_desc'] = 'How long search responses are cached. Pixabay terms require a minimum of 24 hours; the plugin enforces this floor automatically.';
+$string['showattribution'] = 'Show attribution';
+$string['showattribution_desc'] = 'Insert a visible attribution caption (photographer + source) below each inserted image.';
+
+// Dialog.
+$string['dialog_title'] = 'Insert image';
+$string['provider'] = 'Source';
+$string['provider_unsplash'] = 'Unsplash';
+$string['provider_pexels'] = 'Pexels';
+$string['provider_pixabay'] = 'Pixabay';
 $string['search_placeholder'] = 'Search free high-resolution photos...';
 $string['search_button'] = 'Search';
 $string['orientation_all'] = 'All orientations';
@@ -50,6 +90,8 @@ $string['no_results'] = 'No images found. Try a different search term.';
 $string['loading'] = 'Loading...';
 $string['photo_by'] = 'Photo by';
 $string['on_unsplash'] = 'on Unsplash';
+$string['on_pexels'] = 'on Pexels';
+$string['on_pixabay'] = 'on Pixabay';
 $string['insert_hotlink'] = 'Insert (hotlink)';
 $string['insert_download'] = 'Download & insert';
 $string['insert'] = 'Insert image';
@@ -57,6 +99,9 @@ $string['prev_page'] = 'Previous';
 $string['next_page'] = 'Next';
 $string['page_info'] = 'Page {$a->current} of {$a->total}';
 $string['alt_text'] = 'Alt text';
-$string['error_no_apikey'] = 'Unsplash API key is not configured. Please contact your administrator.';
-$string['error_api'] = 'Unsplash API error: {$a}';
-$string['helplinktext'] = 'Unsplash Images';
+$string['error_no_apikey'] = 'No image provider is configured. Please contact your administrator.';
+$string['error_no_apikey_pexels'] = 'Pexels API key is not configured.';
+$string['error_no_apikey_pixabay'] = 'Pixabay API key is not configured.';
+$string['error_api'] = 'API error: {$a}';
+$string['error_download'] = 'Could not download the image. Please try again.';
+$string['helplinktext'] = 'Stock images';

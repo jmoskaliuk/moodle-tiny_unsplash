@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * External AJAX services exposed by the tiny_unsplash plugin.
  *
  * @package     tiny_unsplash
  * @copyright   2026 eLeDia GmbH <support@eledia.de>
@@ -24,8 +24,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tiny_unsplash';
-$plugin->release   = '1.1.0';
-$plugin->version   = 2026042300;
-$plugin->requires  = 2024100100;
-$plugin->maturity  = MATURITY_ALPHA;
+$functions = [
+    'tiny_unsplash_search_images' => [
+        'classname'   => 'tiny_unsplash\\external\\search_images',
+        'description' => 'Search images on Pexels or Pixabay (server-side proxy).',
+        'type'        => 'read',
+        'ajax'        => true,
+        'capabilities'=> 'tiny/unsplash:use',
+    ],
+    'tiny_unsplash_save_image' => [
+        'classname'   => 'tiny_unsplash\\external\\save_image',
+        'description' => 'Download a stock image into the user draft area.',
+        'type'        => 'write',
+        'ajax'        => true,
+        'capabilities'=> 'tiny/unsplash:use',
+    ],
+];
