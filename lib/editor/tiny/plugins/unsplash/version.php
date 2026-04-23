@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tiny_unsplash';
-$plugin->release   = '1.1.0';
-$plugin->version   = 2026042300;
+$plugin->release   = '1.2.0';
+$plugin->version   = 2026042301;
 $plugin->requires  = 2024100100;
 $plugin->maturity  = MATURITY_ALPHA;

@@ -32,6 +32,7 @@ use core_external\external_value;
 use moodle_exception;
 use tiny_unsplash\api\pexels_client;
 use tiny_unsplash\api\pixabay_client;
+use tiny_unsplash\api\unsplash_client;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -46,7 +47,7 @@ class search_images extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'provider'    => new external_value(PARAM_ALPHA, 'Provider key: pexels|pixabay'),
+            'provider'    => new external_value(PARAM_ALPHA, 'Provider key: unsplash|pexels|pixabay'),
             'query'       => new external_value(PARAM_TEXT, 'Search query', VALUE_DEFAULT, ''),
             'page'        => new external_value(PARAM_INT, 'Page (1-based)', VALUE_DEFAULT, 1),
             'perpage'     => new external_value(PARAM_INT, 'Results per page', VALUE_DEFAULT, 12),
@@ -95,6 +96,11 @@ class search_images extends external_api {
 
         try {
             switch ($params['provider']) {
+                case 'unsplash':
+                    $client = new unsplash_client();
+                    $data = $client->search_photos($query, $page, $perpage, $orientation);
+                    break;
+
                 case 'pexels':
                     $client = new pexels_client();
                     $data = $query === ''

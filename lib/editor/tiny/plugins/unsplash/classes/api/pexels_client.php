@@ -133,6 +133,24 @@ class pexels_client extends base_client {
     }
 
     /**
+     * Fetch a single photo by id (used right before download to refresh URLs).
+     *
+     * @param string $id
+     * @return image_result|null
+     */
+    public function get_by_id(string $id): ?image_result {
+        if (!ctype_digit($id)) {
+            return null;
+        }
+        try {
+            $data = $this->get(self::BASE_URL . '/photos/' . $id, []);
+        } catch (moodle_exception $e) {
+            return null;
+        }
+        return empty($data['id']) ? null : $this->map_photo($data);
+    }
+
+    /**
      * Map a Pexels photo payload to the normalised DTO.
      *
      * @param array $photo

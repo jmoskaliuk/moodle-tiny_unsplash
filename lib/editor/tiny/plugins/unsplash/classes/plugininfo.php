@@ -47,6 +47,11 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
     /**
      * Get plugin configuration for the given context.
      *
+     * Only boolean availability flags + per-page + context id are forwarded to
+     * JS. API keys for all three providers stay server-side; the editor calls
+     * the `tiny_unsplash_search_images` / `tiny_unsplash_save_image` web
+     * services which proxy the outbound HTTP request.
+     *
      * @param context $context
      * @param array $options
      * @param array $fpoptions
@@ -63,36 +68,28 @@ class plugininfo extends plugin implements plugin_with_buttons, plugin_with_conf
             return [];
         }
 
-        $unsplashkey = (string) get_config('tiny_unsplash', 'apikey');
-        $appname     = (string) get_config('tiny_unsplash', 'appname');
-        $perpage     = (int) get_config('tiny_unsplash', 'perpage');
-        $showattr    = (int) get_config('tiny_unsplash', 'showattribution');
+        $perpage  = (int) get_config('tiny_unsplash', 'perpage');
+        $showattr = (int) get_config('tiny_unsplash', 'showattribution');
 
-        // Boolean availability flags only — keys stay server-side for Pexels / Pixabay.
-        $hasspexels  = (string) get_config('tiny_unsplash', 'pexels_apikey') !== '';
+        $hasunsplash = (string) get_config('tiny_unsplash', 'apikey') !== '';
+        $haspexels   = (string) get_config('tiny_unsplash', 'pexels_apikey') !== '';
         $haspixabay  = (string) get_config('tiny_unsplash', 'pixabay_apikey') !== '';
 
-        // No provider configured at all? Disable the button.
-        if ($unsplashkey === '' && !$hasspexels && !$haspixabay) {
+        if (!$hasunsplash && !$haspexels && !$haspixabay) {
             return [];
         }
 
-        if ($appname === '') {
-            $appname = 'moodle_unsplash';
-        }
         if ($perpage < 1 || $perpage > 30) {
             $perpage = 12;
         }
 
         return [
-            'apikey'          => $unsplashkey,
-            'appname'         => $appname,
             'perpage'         => $perpage,
             'contextid'       => $context->id,
             'showattribution' => $showattr ? true : false,
             'providers'       => [
-                'unsplash' => $unsplashkey !== '',
-                'pexels'   => $hasspexels,
+                'unsplash' => $hasunsplash,
+                'pexels'   => $haspexels,
                 'pixabay'  => $haspixabay,
             ],
         ];

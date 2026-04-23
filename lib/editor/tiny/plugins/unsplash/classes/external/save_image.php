@@ -29,18 +29,21 @@ use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 use moodle_exception;
+use tiny_unsplash\api\pexels_client;
 use tiny_unsplash\api\pixabay_client;
+use tiny_unsplash\api\unsplash_client;
 use tiny_unsplash\local\file_storage;
 use tiny_unsplash\local\image_result;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Server-side: refresh provider URL (Pixabay URLs expire after 24h), download
- * the image and store it via the Moodle File API in the user's draft area.
+ * Server-side: refresh provider URL (Pixabay URLs expire after 24h, Unsplash
+ * needs a fresh download_location for tracking), download the image and store
+ * it via the Moodle File API in the user's draft area.
  *
- * Returns a draftfile URL the editor can embed. Required for Pixabay
- * (no hotlinking) and optional for Pexels.
+ * Returns a draftfile URL the editor embeds. Used for all providers — there is
+ * no hotlink path anymore.
  */
 class save_image extends external_api {
 
@@ -75,17 +78,26 @@ class save_image extends external_api {
         require_capability('tiny/unsplash:use', $context);
 
         try {
-            $image = self::resolve_image($params['provider'], $params['id']);
+            [$image, $unsplashclient] = self::resolve_image($params['provider'], $params['id']);
             if ($image === null) {
-                return ['url' => '', 'draftitemid' => 0, 'error' => 'Image not found'];
+                return self::error_response('Image not found');
             }
             $stored = file_storage::download_to_draft(
                 $image,
                 $params['contextid'],
                 $params['draftitemid'] ?: null
             );
+
+            // Per Unsplash API guidelines: hit download_location only when the
+            // user actually inserts the photo. We've now downloaded it.
+            if ($unsplashclient instanceof unsplash_client) {
+                $loc = $unsplashclient->get_download_location($params['id']);
+                if ($loc !== null) {
+                    $unsplashclient->trigger_download($loc);
+                }
+            }
         } catch (moodle_exception $e) {
-            return ['url' => '', 'draftitemid' => 0, 'error' => $e->getMessage()];
+            return self::error_response($e->getMessage());
         }
 
         return [
@@ -101,20 +113,47 @@ class save_image extends external_api {
     }
 
     /**
-     * Resolve a provider id back to an {@see image_result} (re-fetch — URLs may have expired).
+     * Resolve a provider id to a fresh image_result. Returns the client too so
+     * the caller can perform provider-specific follow-up calls (Unsplash
+     * download tracking).
      *
      * @param string $provider
      * @param string $id
-     * @return image_result|null
+     * @return array{0: image_result|null, 1: object|null}
      */
-    protected static function resolve_image(string $provider, string $id): ?image_result {
+    protected static function resolve_image(string $provider, string $id): array {
         switch ($provider) {
+            case 'unsplash':
+                $client = new unsplash_client();
+                return [$client->get_by_id($id), $client];
+            case 'pexels':
+                $client = new pexels_client();
+                return [$client->get_by_id($id), null];
             case 'pixabay':
-                return (new pixabay_client())->get_by_id($id);
-            // Pexels per-id endpoint can be added here when needed.
+                $client = new pixabay_client();
+                return [$client->get_by_id($id), null];
             default:
-                throw new moodle_exception('error_api', 'tiny_unsplash', '', 'Provider does not support save');
+                throw new moodle_exception('error_api', 'tiny_unsplash', '', 'Unknown provider');
         }
+    }
+
+    /**
+     * Build a uniform error response shape.
+     *
+     * @param string $message
+     * @return array
+     */
+    protected static function error_response(string $message): array {
+        return [
+            'url'         => '',
+            'draftitemid' => 0,
+            'authorname'  => '',
+            'authorurl'   => '',
+            'sourceurl'   => '',
+            'license'     => '',
+            'provider'    => '',
+            'error'       => $message,
+        ];
     }
 
     public static function execute_returns(): external_single_structure {

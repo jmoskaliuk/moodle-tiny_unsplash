@@ -47,9 +47,9 @@ $string['settings'] = 'Stock images plugin settings';
 $string['settings_desc'] = 'Configure the stock image picker plugin for TinyMCE.';
 $string['settings_unsplash'] = 'Unsplash';
 $string['settings_pexels'] = 'Pexels';
-$string['settings_pexels_desc'] = 'Pexels lets you hotlink images. Attribution is recommended.';
+$string['settings_pexels_desc'] = 'Attribution is required by Pexels and is rendered automatically below each inserted image.';
 $string['settings_pixabay'] = 'Pixabay';
-$string['settings_pixabay_desc'] = 'Pixabay does NOT allow hotlinking. Images are downloaded into the user\'s draft area via the Moodle File API. A minimum cache of 24 hours is enforced.';
+$string['settings_pixabay_desc'] = 'Pixabay terms enforce a minimum API response cache of 24 hours; the plugin honours that floor automatically.';
 $string['settings_common'] = 'Common';
 
 // Settings — Unsplash.
@@ -92,14 +92,13 @@ $string['photo_by'] = 'Photo by';
 $string['on_unsplash'] = 'on Unsplash';
 $string['on_pexels'] = 'on Pexels';
 $string['on_pixabay'] = 'on Pixabay';
-$string['insert_hotlink'] = 'Insert (hotlink)';
-$string['insert_download'] = 'Download & insert';
 $string['insert'] = 'Insert image';
 $string['prev_page'] = 'Previous';
 $string['next_page'] = 'Next';
 $string['page_info'] = 'Page {$a->current} of {$a->total}';
 $string['alt_text'] = 'Alt text';
 $string['error_no_apikey'] = 'No image provider is configured. Please contact your administrator.';
+$string['error_no_apikey_unsplash'] = 'Unsplash API key is not configured.';
 $string['error_no_apikey_pexels'] = 'Pexels API key is not configured.';
 $string['error_no_apikey_pixabay'] = 'Pixabay API key is not configured.';
 $string['error_api'] = 'API error: {$a}';
