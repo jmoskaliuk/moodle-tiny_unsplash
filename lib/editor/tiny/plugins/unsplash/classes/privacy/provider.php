@@ -24,16 +24,58 @@
 
 namespace tiny_unsplash\privacy;
 
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
+
 /**
- * Privacy provider — this plugin does not store any personal data.
+ * Privacy provider — declares the external image services queried by this plugin.
+ *
+ * The plugin itself does not store user-identifying data; it only forwards the
+ * search query the user types into the picker.
  */
-class provider implements \core_privacy\local\metadata\null_provider {
-    /**
-     * Get the language string identifier with a description of what data this plugin stores.
-     *
-     * @return string
-     */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+class provider implements
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider {
+
+    public static function get_metadata(collection $collection): collection {
+        $collection->add_external_location_link(
+            'unsplash',
+            ['searchquery' => 'privacy:metadata:searchquery'],
+            'privacy:metadata:unsplash'
+        );
+        $collection->add_external_location_link(
+            'pexels',
+            ['searchquery' => 'privacy:metadata:searchquery'],
+            'privacy:metadata:pexels'
+        );
+        $collection->add_external_location_link(
+            'pixabay',
+            ['searchquery' => 'privacy:metadata:searchquery'],
+            'privacy:metadata:pixabay'
+        );
+        return $collection;
+    }
+
+    public static function get_contexts_for_userid(int $userid): contextlist {
+        return new contextlist();
+    }
+
+    public static function export_user_data(approved_contextlist $contextlist) {
+    }
+
+    public static function delete_data_for_all_users_in_context(\context $context) {
+    }
+
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
+    }
+
+    public static function get_users_in_context(userlist $userlist) {
+    }
+
+    public static function delete_data_for_users(approved_userlist $userlist) {
     }
 }

@@ -27,14 +27,21 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     if ($ADMIN->fulltree) {
-        // Introductory heading.
         $settings->add(new admin_setting_heading(
             'tiny_unsplash/pluginname',
             get_string('pluginname', 'tiny_unsplash'),
             get_string('pluginname_desc', 'tiny_unsplash')
         ));
 
-        // Unsplash API Access Key.
+        // ---------------------------------------------------------------------
+        // Unsplash.
+        // ---------------------------------------------------------------------
+        $settings->add(new admin_setting_heading(
+            'tiny_unsplash/unsplash_heading',
+            get_string('settings_unsplash', 'tiny_unsplash'),
+            ''
+        ));
+
         $settings->add(new admin_setting_configpasswordunmask(
             'tiny_unsplash/apikey',
             get_string('apikey', 'tiny_unsplash'),
@@ -42,7 +49,6 @@ if ($hassiteconfig) {
             ''
         ));
 
-        // Application name (for UTM attribution).
         $settings->add(new admin_setting_configtext(
             'tiny_unsplash/appname',
             get_string('appname', 'tiny_unsplash'),
@@ -51,13 +57,69 @@ if ($hassiteconfig) {
             PARAM_ALPHANUMEXT
         ));
 
-        // Results per page.
+        // ---------------------------------------------------------------------
+        // Pexels.
+        // ---------------------------------------------------------------------
+        $settings->add(new admin_setting_heading(
+            'tiny_unsplash/pexels_heading',
+            get_string('settings_pexels', 'tiny_unsplash'),
+            get_string('settings_pexels_desc', 'tiny_unsplash')
+        ));
+
+        $settings->add(new admin_setting_configpasswordunmask(
+            'tiny_unsplash/pexels_apikey',
+            get_string('pexels_apikey', 'tiny_unsplash'),
+            get_string('pexels_apikey_desc', 'tiny_unsplash'),
+            ''
+        ));
+
+        // ---------------------------------------------------------------------
+        // Pixabay.
+        // ---------------------------------------------------------------------
+        $settings->add(new admin_setting_heading(
+            'tiny_unsplash/pixabay_heading',
+            get_string('settings_pixabay', 'tiny_unsplash'),
+            get_string('settings_pixabay_desc', 'tiny_unsplash')
+        ));
+
+        $settings->add(new admin_setting_configpasswordunmask(
+            'tiny_unsplash/pixabay_apikey',
+            get_string('pixabay_apikey', 'tiny_unsplash'),
+            get_string('pixabay_apikey_desc', 'tiny_unsplash'),
+            ''
+        ));
+
+        // ---------------------------------------------------------------------
+        // Common.
+        // ---------------------------------------------------------------------
+        $settings->add(new admin_setting_heading(
+            'tiny_unsplash/common_heading',
+            get_string('settings_common', 'tiny_unsplash'),
+            ''
+        ));
+
         $settings->add(new admin_setting_configtext(
             'tiny_unsplash/perpage',
             get_string('perpage', 'tiny_unsplash'),
             get_string('perpage_desc', 'tiny_unsplash'),
             '12',
             PARAM_INT
+        ));
+
+        // Pixabay requires a minimum cache of 24 hours; we enforce that floor in code.
+        $settings->add(new admin_setting_configduration(
+            'tiny_unsplash/cachettl',
+            get_string('cachettl', 'tiny_unsplash'),
+            get_string('cachettl_desc', 'tiny_unsplash'),
+            DAYSECS,
+            HOURSECS
+        ));
+
+        $settings->add(new admin_setting_configcheckbox(
+            'tiny_unsplash/showattribution',
+            get_string('showattribution', 'tiny_unsplash'),
+            get_string('showattribution_desc', 'tiny_unsplash'),
+            1
         ));
     }
 }
